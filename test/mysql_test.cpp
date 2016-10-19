@@ -169,6 +169,11 @@ TEST_CASE_METHOD(mysql_fixture, "string_test", "[mysql][string]")
     string_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "large_string_test", "[mysql][largestring]")
+{
+    large_string_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "transaction_test", "[mysql][transaction]")
 {
     transaction_test();

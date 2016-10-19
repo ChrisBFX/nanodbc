@@ -730,6 +730,10 @@ public:
     void
     bind(short param, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
 
+    template <class T>
+    void
+    bind_as(short param, const T* value, short data_type, unsigned long parameter_size, param_direction direction = PARAM_IN);
+
     /// \brief Binds multiple values.
     /// \see bind_multi
     template <class T>

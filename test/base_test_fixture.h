@@ -1503,6 +1503,33 @@ struct base_test_fixture
         REQUIRE(ref == name);
     }
 
+	void large_string_test()
+	{
+		nanodbc::connection connection = connect();
+		REQUIRE(connection.native_dbc_handle() != nullptr);
+		REQUIRE(connection.native_env_handle() != nullptr);
+		REQUIRE(connection.transactions() == std::size_t(0));
+
+		const nanodbc::string_type name = NANODBC_TEXT("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibu");
+
+		drop_table(connection, NANODBC_TEXT("large_string_test"));
+		execute(connection, NANODBC_TEXT("create table large_string_test (s varchar(500));"));
+
+		nanodbc::statement query(connection);
+		prepare(query, NANODBC_TEXT("insert into large_string_test(s) values(?)"));
+		query.bind_as(0, name.c_str(), SQL_VARCHAR, static_cast<unsigned long>(name.length()));
+		//query.bind(0, name.c_str());
+		nanodbc::execute(query);
+
+		nanodbc::result results = execute(connection, NANODBC_TEXT("select s from large_string_test;"));
+		REQUIRE(results.next());
+		REQUIRE(results.get<nanodbc::string_type>(0) == name);
+
+		nanodbc::string_type ref;
+		results.get_ref(0, ref);
+		REQUIRE(ref == name);
+	}
+
     void time_test()
     {
         auto connection = connect();

@@ -3563,6 +3563,7 @@ unsigned long statement::parameter_size(short param) const
 // We need to instantiate each form of bind() for each of our supported data types.
 #define NANODBC_INSTANTIATE_BINDS(type)                                                            \
     template void statement::bind(short, const type*, param_direction);              /* 1-ary */   \
+    template void statement::bind_as(short, const type*, short, unsigned long, param_direction);              /* 1-ary */   \
     template void statement::bind(short, const type*, std::size_t, param_direction); /* n-ary */   \
     template void statement::bind(                                                                 \
         short, const type*, std::size_t, const type*, param_direction); /* n-ary, sentry */        \
@@ -3589,6 +3590,14 @@ template <class T>
 void statement::bind(short param, const T* value, param_direction direction)
 {
     impl_->bind(param, value, 1, direction);
+}
+
+
+template <class T>
+void statement::bind_as(short param, const T* value, short data_type, unsigned long parameter_size, param_direction direction)
+{
+    auto param_type = statement_impl::param_type_from_direction(direction);
+    impl_->bind_parameter(param, value, 1, data_type, param_type, parameter_size, 1);
 }
 
 template <class T>
