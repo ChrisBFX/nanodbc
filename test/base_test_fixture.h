@@ -34,6 +34,7 @@
 #endif
 #include <sql.h>
 #include <sqlext.h>
+#include <locale>
 
 namespace nanodbc
 {

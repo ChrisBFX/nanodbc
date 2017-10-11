@@ -22,6 +22,7 @@
 #include <cstring>
 #include <ctime>
 #include <iomanip>
+#include <sstream>
 #include <map>
 #include <type_traits>
 
@@ -317,6 +318,23 @@ inline void convert(const std::string& in, std::string& out)
     out = in;
 }
 #endif
+
+template <class T>
+void from_string(const char* input, size_t len, T& out)
+{
+    std::istringstream str(std::string(input, len));
+    str >> out;
+}
+
+void from_string(const char* input, size_t len, char& out)
+{
+    out = static_cast<char>(*input);
+}
+
+void from_string(const char* input, size_t len, wide_char_t& out)
+{
+    out = static_cast<wide_char_t>(*input);
+}
 
 // Attempts to get the most recent ODBC error as a string.
 // Always returns std::string, even in unicode mode.
@@ -3170,7 +3188,7 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     switch (col.ctype_)
     {
     case SQL_C_CHAR:
-        result = (T) * (char*)(s);
+        from_string(s, col.sqlsize_, result);
         return;
     case SQL_C_SSHORT:
         result = (T) * (short*)(s);
